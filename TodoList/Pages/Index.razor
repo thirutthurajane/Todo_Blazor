@@ -17,36 +17,25 @@
             <input class="form-control" placeholder="Realtime filter" @oninput="@(args => OnFilter(args.Value.ToString()))"/>
             @if (_todoList != null)
             {
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Title</th>
-                        <th>Detail</th>
-                        <th>Finish</th>
-                        <th>Created</th>
-                        <th>Updated</th>
-                        <th>Action</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+                <div class="row mt-2">
                     @foreach (var todo in _todoList!)
                     {
-                        <tr>
-                            <td>@todo.Id</td>
-                            <td>@todo.Title</td>
-                            <td>@todo.Detail</td>
-                            <td>@todo.IsFinish</td>
-                            <td>@todo.Created</td>
-                            <td>@todo.Updated</td>
-                            <td>
-                                <button class="btn btn-primary" @onclick="() => OnEdit(todo.Id)">Edit</button>
-                                <button class="btn btn-danger" type="button" @onclick="() => OnDelete(todo.Id)">Delete</button>
-                            </td>
-                        </tr>
+                        <div class="col-4">
+                            <div class="card mb-2">
+                                <div class="card-header">
+                                    <h4>@todo.Title</h4>
+                                </div>
+                                <div class="card-body">
+                                    <p>@todo.Detail</p>
+                                </div>
+                                <div class="card-footer">
+                                    <button class="btn btn-primary" @onclick="() => OnEdit(todo.Id)">Edit</button>
+                                    <button class="btn btn-danger" type="button" @onclick="() => OnDelete(todo.Id)">Delete</button>
+                                </div>
+                            </div>
+                        </div>
                     }
-                    </tbody>
-                </table>
+                </div>
             }
         </div>
     </div>
@@ -57,11 +46,12 @@
 {
     private string Filter { get; set; }
     List<Todo>? _todoList;
+
     protected override async Task OnInitializedAsync()
     {
         _todoList = await Task.Run(() => _todoServices.GetAllTodoAsync());
     }
-    
+
 
     private async Task OnDelete(int id)
     {
@@ -77,8 +67,7 @@
     private async Task OnFilter(string? args)
     {
         Filter = args;
-      Console.WriteLine(Filter);
+        Console.WriteLine(Filter);
         _todoList = await _todoServices.GetTodoByTitle(Filter);
-     
     }
 }
