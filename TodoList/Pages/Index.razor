@@ -1,0 +1,84 @@
+@page "/"
+@using TodoList.Models
+@using TodoList.Services
+@inject TodoServices _todoServices
+@inject NavigationManager _navigationManager
+<PageTitle>Index</PageTitle>
+
+<div class="card">
+    <div class="card-header">
+        <div class="text-center">
+            <h1>Todo List</h1>
+        </div>
+        <div class="text-center">
+            <p>Create for learn web assembly</p>
+        </div>
+        <div class="card-body">
+            <input class="form-control" placeholder="Realtime filter" @oninput="@(args => OnFilter(args.Value.ToString()))"/>
+            @if (_todoList != null)
+            {
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Title</th>
+                        <th>Detail</th>
+                        <th>Finish</th>
+                        <th>Created</th>
+                        <th>Updated</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var todo in _todoList!)
+                    {
+                        <tr>
+                            <td>@todo.Id</td>
+                            <td>@todo.Title</td>
+                            <td>@todo.Detail</td>
+                            <td>@todo.IsFinish</td>
+                            <td>@todo.Created</td>
+                            <td>@todo.Updated</td>
+                            <td>
+                                <button class="btn btn-primary" @onclick="() => OnEdit(todo.Id)">Edit</button>
+                                <button class="btn btn-danger" type="button" @onclick="() => OnDelete(todo.Id)">Delete</button>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>
+<SurveyPrompt Title="How is Blazor working for you?"/>
+
+@code
+{
+    private string Filter { get; set; }
+    List<Todo>? _todoList;
+    protected override async Task OnInitializedAsync()
+    {
+        _todoList = await Task.Run(() => _todoServices.GetAllTodoAsync());
+    }
+    
+
+    private async Task OnDelete(int id)
+    {
+        await _todoServices.DeleteTodo(id);
+        _todoList = await Task.Run(() => _todoServices.GetAllTodoAsync());
+    }
+
+    private void OnEdit(int id)
+    {
+        _navigationManager.NavigateTo($"edit/{id}");
+    }
+
+    private async Task OnFilter(string? args)
+    {
+        Filter = args;
+      Console.WriteLine(Filter);
+        _todoList = await _todoServices.GetTodoByTitle(Filter);
+     
+    }
+}

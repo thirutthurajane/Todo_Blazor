@@ -1,0 +1,40 @@
+@page "/add"
+@using TodoList.Models
+@using TodoList.Services
+@using Microsoft.AspNetCore.Components
+@inject TodoServices _todoServices
+@inject NavigationManager NavigationManager
+<div class="card">
+    <div class="card-header text-center">
+        <h3>Add Todo</h3>
+    </div>
+    <div class="card-body">
+        <form @onsubmit="@CreateTodo">
+            <div class="text-center">
+                <span>Test Realtime @todo.Title</span>
+                <div class="form-group">
+                    <label class="control-label">Title</label>
+                    <input form="Title" class="form-control" @bind="@todo.Title"/>
+                </div>
+            </div>
+            <div class="text-center">
+                <div class="form-group">
+                    <label class="control-label">Detail</label>
+                    <input form="Detail" class="form-control" @bind="@todo.Detail"/>
+                </div>
+            </div>
+            <button class="btn btn-primary" type="submit">Submit</button>
+            <button class="btn btn-danger" type="reset">Clear</button>
+        </form>
+    </div>
+</div>
+
+@code {
+    Todo todo = new();
+
+    private async Task CreateTodo()
+    {
+        await _todoServices.AddTodo(todo);
+        NavigationManager.NavigateTo("",true);
+    }
+}

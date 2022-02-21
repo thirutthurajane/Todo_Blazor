@@ -1,0 +1,45 @@
+@page "/edit/{TodoId:int}"
+@using TodoList.Models
+@using TodoList.Services
+@using Microsoft.AspNetCore.Components
+@inject TodoServices _todoServices
+@inject NavigationManager NavigationManager
+<div class="card">
+    <div class="card-header text-center">
+        <h3>Add Todo</h3>
+    </div>
+    <div class="card-body">
+        <form @onsubmit="OnEdit">
+            <div class="text-center">
+                <span>Test Realtime @_todo.Title</span>
+                <div class="form-group">
+                    <label class="control-label">Title</label>
+                    <input form="Title" class="form-control" @bind="@_todo.Title"/>
+                </div>
+            </div>
+            <div class="text-center">
+                <div class="form-group">
+                    <label class="control-label">Detail</label>
+                    <input form="Detail" class="form-control" @bind="@_todo.Detail"/>
+                </div>
+            </div>
+            <button class="btn btn-primary" type="submit">Edit</button>
+        </form>
+    </div>
+</div>
+@code {
+    Todo _todo = new();
+    [Parameter]
+    public int TodoId { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        _todo = await _todoServices.GetTodo(TodoId);
+    }
+
+    private async Task OnEdit()
+    {
+        await _todoServices.EditTodo(_todo);
+        NavigationManager.NavigateTo("");
+    }
+
+}
